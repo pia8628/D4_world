@@ -57,3 +57,4 @@ This repository contains a small text-based adventure inspired by the world of *
 - 完成結局後可選擇再次遊玩，探索不同選項。
 
 祝你玩得開心，也祝福壽星生日快樂！
+
