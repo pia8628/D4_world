@@ -1,0 +1,433 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Jul 12 20:09:51 2023
+
+@author: Jolin & Jialin
+For Jialin's Birthday Celerbrate
+"""
+import random
+import time
+
+def printer(text,delay=0.02):
+    #打字機效果
+    for ch in text:
+        print(ch, end="",flush=True)
+        time.sleep(delay)
+    print("")
+    
+
+RoleList = ["野蠻人","法師","遊俠","德魯伊","死靈法師"]
+#0野蠻人，1法師、2遊俠、3德魯伊、4死靈法師
+WeaponList=[["末日使者","先祖之誓","拉瑪蘭迪的傑作"], #野蠻人
+            ["焰疤","暴風增長奔雷杖","無盡怒火法杖"], #法師
+            ["狩天弓","定罪","艾席拉的彎鉤匕首"], #遊俠
+            ["屠夫切肉刀","盈月","老巫婆大法杖"], #德魯伊
+            ["占卜罪惡","漆黑之河","分裂石像鬼巨劍"]] #死靈法師
+WeaponAtk=[1235, 1050, 880]
+
+class character:
+    def __init__(self, name, role, level):
+        self.name = name
+        self.role = role
+        self.level = level
+        self.defense = 100
+        self.attack = 100
+        self.HP = 4000
+        self.weapon = "赤手空拳" #武器名稱
+
+    def PrintStatus(self): #列印角色狀態
+        print("名稱:", self.name)
+        print("職業:", RoleList[self.role])
+        print("等級:", self.level)
+        print("生命值:", self.HP)
+        print("武器:", self.weapon)
+        print("攻擊力", self.attack)
+        
+    def WetherPrintStatus(self): #詢問是否列印角色狀態
+        wps=input("請問是否列印角色目前狀態? (Y/N)：")
+        if wps == "Y":
+            self.PrintStatus()
+            input("請輸入任何鍵(Enter)繼續：")
+    
+    def Equip(self,n): #角色獲得裝備，n=0,1,2
+        self.attack = self.attack + WeaponAtk[n]
+        self.weapon = WeaponList[self.role][n]
+    
+    def Attack(self): #攻擊點數
+        r = random.uniform(1, 1.1)
+        att = round(self.attack * r)
+        return att
+    
+    def Defend(self): #防禦點數
+        pass
+
+def battle(act, atk, bossHP, playerHP, BossNo): 
+    #act攻擊或防禦 atk=.character.attack
+    boss = random.choice([True, False])
+    bossAtk = round(BossAtk[BossNo]*random.uniform(1,1.1))
+    if act == True and boss == True:
+        #玩家和魔王都攻擊
+        printer(name+"和"+BossName[BossNo]+"衝向對方，互相攻擊！")
+        bossHP = bossHP - atk
+        playerHP = playerHP - bossAtk
+        print("敵方血量: ", bossHP)
+        print("玩家血量: ", playerHP)
+        
+    elif act == True and boss == False:
+        #玩家攻擊，魔王防禦
+        printer(name + "攻擊"+BossName[BossNo]+"！")
+        atk = atk - 500
+        bossHP = bossHP - atk
+        print("敵方血量: ", bossHP)
+        print("玩家血量: ", playerHP)
+        
+    elif act == False and boss == True:
+        #玩家防禦，魔王攻擊
+        printer(name + "緊緊握住盾牌，"+BossName[BossNo]+"大手一揮！")
+        bossAtk = bossAtk - 500
+        playerHP = playerHP - bossAtk
+        print("敵方血量: ", bossHP)
+        print("玩家血量: ", playerHP)
+        
+    else:
+        #玩家和魔王都防禦
+        printer(name+"和"+BossName[BossNo]+"停在原地採取防禦姿勢，緊盯著對方。")
+    return(bossHP, playerHP)
+
+BossName=["伊萊亞斯","莉莉絲"]
+BossHP=[5000,8000] #敵方血量
+BossAtk=[900,1200] #敵方攻擊力
+
+def BossFight(BossNo):
+    
+    bossHP = BossHP[BossNo]
+    cont = True #戰鬥是否繼續
+    
+    while cont:
+        AorD = int(input("請選擇攻擊(0)或防禦(1)："))
+        while AorD !=0 and AorD !=1:
+            AorD = int(input("請選擇攻擊(0)或防禦(1)："))
+        if AorD == 0:
+            act = True
+        else: act = False
+        bossHP,c.HP = battle(act,c.attack, bossHP, c.HP, BossNo )
+        
+        if bossHP <=0 and c.HP>0 : #BOSS死亡，玩家存活
+            print(BossName[BossNo]+"死亡，"+name+"存活，戰鬥結束。")
+            cont = False
+            result=1
+        if bossHP >0 and c.HP<=0 : #BOSS存活，玩家死亡
+            print(BossName[BossNo]+"存活，"+name+"死亡，戰鬥結束")
+            cont = False
+            result=2
+        if bossHP <=0 and c.HP<=0 : #BOSS和玩家死亡
+            print(BossName[BossNo]+"和"+name+"死亡，戰鬥結束")
+            cont = False
+            result=3
+    return result
+    
+def reset():
+    global name
+    name=""
+
+#%%
+#序章
+def prologue():
+    global name
+    print("")
+    printer("歡迎來到《DIABLO 4 暗黑破壞神》的幻想世界")
+    print("")
+    print("")
+    printer("傳說中，涅法雷姆(Nephalem)是天使與惡魔的混血後代，也是人類的遠古名稱，他們D4的主角，擁有著強大的潛能和自由的意志。")
+    print("")
+    printer("你，就是那位勇敢的涅法雷姆的領導者。")
+    print("")
+    
+    name = input("請輸入你的名字：")
+    if name =="": name = "無名氏"
+    print("")
+    printer("現在，就讓"  + name +  "帶領著年輕女孩小涅以及長老羅拉斯，以及所有一起共同奮戰的夥伴們，前往打敗惡魔之女莉莉絲吧!")
+    print("")
+
+#%%
+#關卡一 封印解除
+def Episode1():
+    global c
+    print("_______________")     
+    printer("關卡1 封印解除")
+    print("")
+    print("")
+    printer("一群盜墓者被怪物追趕者，跑進古墓裡躲藏。")
+    print("")
+    printer("他們喊道＂快!解除封印，我們得進入那扇門…＂")
+    print("")
+    printer("眾人摸索了一番，牆上刻印著看不懂的古文，某個僧侶在混亂當中不小心割傷了手，血滴到地上。")
+    print("")
+    printer("這才終於弄明白＂血就是鑰匙。＂")
+    print("")
+    time.sleep(1)
+    blood_input = 1
+    while blood_input <= 2:
+        blood_input = int(input("請玩家輸入自願奉獻的個人血量："))
+        if blood_input <= 2:
+            printer("不，不，不，這樣還不夠…，請重新輸入")
+    if (int(blood_input)>=3):
+        print("")
+        printer("三人前來，道路循三而開，自願者奉鮮血呼喚汝歸來。")
+    time.sleep(1)
+    print("")
+    printer("伊萊亞斯接著說道「創世聖母啊，請拯救我們！」")
+    print("")
+    printer("於是，惡魔之女莉莉絲的封印就這樣被解除了。")
+    print("")
+    print("")
+    
+    a = int(input("現在，就請輸入你的職業，0野蠻人，1法師、2遊俠、3德魯伊、4死靈法師: "))
+    while a<0 or a>=5:
+        printer("輸入錯誤，請重新輸入")
+        a = int(input("現在，就請輸入你的職業，0野蠻人，1法師、2遊俠、3德魯伊、4死靈法師: "))
+    b = input("請輸入你的等級(1-100級)：")
+    
+    c = character(name, a, b)
+    c.WetherPrintStatus()
+
+
+#%%
+#關卡二 莉莉絲祭壇
+def Episode2():
+    global c
+    
+    print("_______________")     
+    printer("關卡2 莉莉絲祭壇")
+    print("")
+    print("")
+    printer("《多南的恩惠》")
+    print("")
+    time.sleep(0.5)
+    printer("你現在正在奇歐瓦夏跟多南交談，為了獎勵勇士們，你可以從馬廄領到一匹馬。")
+    time.sleep(0.5)
+    printer("當你騎著馬兒，走到了一個路口，左邊看起來一片荒漠，右邊則是冰天雪地。")
+    time.sleep(0.5)
+    
+    choice1=0
+    choice2=0
+    while choice1 != 1 and choice1 !=2:
+        choice1=int(input("請輸入你想要往左(1)或往右(2)："))
+    
+    if choice1 == 1:
+        print("")
+        printer("你選擇前往大乾原...")
+        time.sleep(0.5)
+        print("")
+        printer("《命運的抉擇》")
+        print("")
+        time.sleep(0.5)
+        printer("當你騎了一段路程，發現自己的口越來越渴，非常想停下來休息一下，此時又到了一個路口，左邊仍然是看不見盡頭的暗黑深處，右邊則是光明聖地。")
+        time.sleep(0.5)
+        
+        while choice2 != 1 and choice2 !=2:
+            choice2 = int(input("請輸入你想要往左(1)或往右(2)："))
+        
+        if choice2 == 1:
+            print("")
+            printer("你選擇前往卡基斯坦...")
+            n=1
+            print("")
+            print("恭喜你獲得武器：",WeaponList[c.role][n],sep="")
+            c.Equip(n)
+            print("")
+            c.WetherPrintStatus()
+                    
+        if choice2 == 2:
+            print("")
+            printer("你選擇前往聖光大教堂...")
+            n=0
+            print("")
+            print("恭喜你獲得武器：",WeaponList[c.role][n],sep="")
+            c.Equip(n)
+            print("")
+            c.WetherPrintStatus()
+             
+    else: #choice1 ==2
+        print("")
+        printer("你選擇前往碎峰嶺...")
+        time.sleep(0.5)
+        print("")
+        print("")
+        printer("《命運的抉擇》")
+        time.sleep(0.5)
+        print("")
+        printer("當你騎了一段路程，發現自己的身體感到越來越冷，飢寒交迫只得停下來休息，此時又到了一個路口，左邊仍然是無止盡的山頭，右邊則是看不見深處的叢林。")
+        time.sleep(0.5)
+        
+        while choice2 != 1 and choice2 !=2:
+            choice2 = int(input("請輸入你想要往左(1)或往右(2)："))
+        
+        if choice2 == 1:
+            print("")
+            printer("你選擇前往斯科斯格倫...")
+            n=2
+            print("")
+            print("恭喜你獲得武器：",WeaponList[c.role][n],sep="")
+            c.Equip(n)
+            print("")
+            c.WetherPrintStatus()
+            
+        if choice2 == 2:
+            print("")
+            printer("你選擇前往哈維薩...")
+            n=1
+            print("")
+            print("恭喜你獲得武器：",WeaponList[c.role][n],sep="")
+            c.Equip(n)
+            print("")
+            c.WetherPrintStatus()
+
+#%%
+#關卡三
+def Episode3():
+    global c
+    
+    print("_______________")     
+    printer("關卡3 沉淪神殿")
+    print("")
+    print("")
+    print("hello,",c.level,"等的",name,sep="")
+    if(int(c.level)<50):
+        print("你太稚嫩了，還得再多努力一點才能打敗大魔王哦！")
+    if(int(c.level)>=50):
+        print("恭喜你已經脫離新手村了，現在，請帶領眾人們去打敗大魔王吧！")
+    print("")
+    input("請輸入任何鍵(Enter)繼續：")
+    print("")
+    
+    printer("聰明的" + name +  "猜到了伊萊亞斯不死之身的秘密跟低語之樹有關")
+    print("")
+    printer("但是這不好找...")
+    time.sleep(0.5)
+    print("")
+    printer("身為領導者的你，在沼澤裡沿著大巨蟒的身軀四處尋找。")
+    print("")
+    printer("很快，一顆掛滿頭顱的大樹突然出現在眼前。")
+    print("")
+    printer("這應該就是低語之樹了。")
+    tree=input("請問是否同意進入低語之樹? (Y/N)：")#低語之樹
+    if (tree == "Y"):
+        print("歡迎光臨！")
+    else:
+        print("才不管你，直接強迫進入，嘿嘿嘿...")
+    print("")
+    print("樹上的頭顱風鈴般搖擺，每個頭顱都在述說著大樹的低語。")
+    print("")
+    printer("你們向低語之樹說明來意。")
+    print("")
+    printer("頭顱告訴你們")
+    print("")
+    printer("所有和秘語之樹簽訂契約的人都可以從古樹這裡得到自己想要的知識")
+    print("")
+    printer("「代價是死後會成為古樹上懸掛的頭顱。」")
+    input("請輸入任何鍵(Enter)繼續：")
+    
+    print("") 
+    printer("伊萊亞斯應該就是從古樹這裡得到了召喚莉莉絲的知識")
+    print("")
+    printer("但是他逃脫了死亡，讓契約無法完成。") 
+    print("") 
+    printer("身為領導者的你，現在必須抉擇由誰獻出頭顱? ")
+    time.sleep(0.5)
+    print("")
+    printer("正當你還在猶豫不決之時") 
+    print("")
+    printer("羅拉斯卻喊道：「拿我的頭顱來換吧！」") 
+    print("")
+    printer("羅拉斯說：「我已經老了，就算我的頭顱必須得掛在這裡，我也要把莉莉絲拖回地獄。」")
+    print("")
+    printer("最後，古樹讓你們去沉船之間找一口棺材，也許能引領你們找出伊萊亞斯的秘密。") 
+    input("請輸入任何鍵(Enter)繼續：")  
+    print("") 
+    print("")
+    printer("《找到小指》")
+    print("")
+    time.sleep(0.5)
+    printer("你們進入了沉船廢墟")
+    print("")
+    printer("小涅自告奮勇，利用她嬌小的身軀穿過小洞給你們開門。")
+    print("")
+    printer("但是，在開門的過程中，她卻不幸被惡鬼所傷。")
+    print("")
+    printer("這讓她的手臂被感染了。")
+    print("")
+    printer("為了救她，羅拉斯果斷的用燒紅的武器斬斷了她的手臂，阻止感染擴散。")
+    print("")
+    printer("小涅的勇氣與犧牲，讓羅拉斯堅信，這個年輕人將來一定可以成為一名優秀的赫拉迪姆。")
+    print("")
+    printer("他留下照顧小涅，你則毅然向前。")
+    print("")
+    printer("在破碎殘骸的深處，你終於找到了棺材。")
+    print("")
+    printer("古樹的低語再次想起，讓你進入棺材。")
+    print("")
+    printer("突然，你正在遭遇伊萊亞斯的攻擊中！")
+    print("")
+
+
+play = True
+while play:
+    reset()
+    prologue() #序章
+    Episode1() #封印解除
+    Episode2() #莉莉絲祭壇
+    Episode3() #即將戰鬥
+    # name = "10"
+    # c = character(name, 1, 1000)
+    # c.Equip(1)
+    
+    Battle_1_Result = BossFight(0) #對戰伊萊亞斯
+    if Battle_1_Result ==1: #伊萊亞斯死亡，玩家存活
+        printer(name+"勝利，角色升級，生命值回復！")
+        c.level = 100
+        c.HP = 6500
+        c.WetherPrintStatus()
+        
+        printer("伊萊亞斯死亡啟動惡魔之女莉莉絲的召喚術！")
+        printer("莉莉絲向" + name + "舉起了手...")
+        
+        Battle_2_Result = BossFight(1) #對戰莉莉絲
+        if Battle_2_Result ==1: #莉莉絲死亡，玩家存活
+            pass
+        if Battle_2_Result ==2: #莉莉絲存活，玩家死亡
+            pass
+        if Battle_2_Result ==3: #莉莉絲和玩家死亡
+            pass
+    if Battle_1_Result ==2: #伊萊亞斯存活，玩家死亡
+        pass
+    if Battle_1_Result ==3: #伊萊亞斯和玩家死亡
+        pass
+    print("")
+    printer("戰鬥結束")
+    print("")
+    print("")
+    printer("最終章")
+    printer("戰鬥結束後，此時你回到羅拉斯身邊")
+    printer("但沒想到，小涅卻不見蹤影，只留下一封信...")
+    input("請輸入任何鍵(Enter)繼續：")
+    printer("原來，小涅帶著靈魂石和地獄魔王墨菲斯托化身的血狼跑了")
+    printer("他們一起乘船前往了另一個地方")
+    print("")
+    printer("故事還沒完了")
+    printer("究竟小涅和墨菲斯托會發生什麼事?")
+    printer("勇敢的你，是否還願意接受接下來更大的挑戰呢?")
+    print("")
+    printer("遊戲最後的挑戰，請幫我一起跟親愛的【佳臨】說聲「生日快樂！」")
+    printer("謝謝你的參與。")
+    p = input("請問是否重新遊戲？(Y重新遊戲 N結束遊戲):")
+    if p == "N": play =False
+    
+    
+    
+
+
+    
+
+
+
